@@ -6,7 +6,10 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-openai.api_key = os.getenv("OPENAI_API_KEY")
+openai_api_key = os.getenv("OPENAI_API_KEY")
+if not openai_api_key:
+    raise EnvironmentError("La variable de entorno OPENAI_API_KEY no está definida.")
+openai.api_key = openai_api_key
 
 app = Flask(__name__)
 CORS(app)
@@ -17,10 +20,15 @@ def home():
 
 @app.route('/api/chat', methods=['POST'])
 def chat():
-    data = request.get_json()
-    prompt = data.get('prompt', '')
+    if not request.is_json:
+        return jsonify({'error': 'El cuerpo de la petición debe ser JSON'}), 400
 
-    if not prompt:
+    data = request.get_json(silent=True)
+    if data is None:
+        return jsonify({'error': 'No se pudo interpretar el JSON'}), 400
+
+    prompt = data.get('prompt', '')
+    if not prompt or not prompt.strip():
         return jsonify({'error': 'No se envió ningún prompt'}), 400
 
     try:
@@ -31,12 +39,12 @@ def chat():
         )
         result = response['choices'][0]['message']['content']
         return jsonify({'respuesta': result})
+    except openai.error.AuthenticationError:
+        return jsonify({'error': 'Error de autenticación con OpenAI'}), 401
+    except openai.error.OpenAIError as oe:
+        return jsonify({'error': f'Error con la API de OpenAI: {str(oe)}'}), 502
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        return jsonify({'error': f'Error inesperado: {str(e)}'}), 500
 
 if __name__ == '__main__':
     app.run()
-
-
-
-
