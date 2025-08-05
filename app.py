@@ -4,13 +4,12 @@ from openai import OpenAI
 import os
 from dotenv import load_dotenv
 
-# Cargar variables de entorno
 load_dotenv()
 
 app = Flask(__name__)
 CORS(app)
 
-# Inicializar cliente OpenAI con la API Key desde Render
+# Inicializar cliente OpenAI
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 @app.route("/api/chat", methods=["POST"])
@@ -22,7 +21,6 @@ def chat():
         if not prompt:
             return jsonify({"error": "No se envió ninguna pregunta"}), 400
 
-        # Llamada al modelo más barato
         response = client.chat.completions.create(
             model="gpt-4o-mini",
             messages=[
