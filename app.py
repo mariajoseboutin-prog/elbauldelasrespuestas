@@ -19,7 +19,7 @@ def chat():
         prompt = data.get("prompt", "")
 
         response = client.chat.completions.create(
-            model="gpt-3.5-turbo",
+            model="gpt-4o-mini",  # Modelo más barato
             messages=[
                 {"role": "system", "content": "Eres un asistente esotérico experto en tarot, litomancia y astrología."},
                 {"role": "user", "content": prompt}
