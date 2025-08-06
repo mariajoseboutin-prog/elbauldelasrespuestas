@@ -39,7 +39,10 @@ def chat():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 # Interfaz de chat estático en /chat
-@app.route("/chat", methods=["GET"])
+@ap@app.route("/chat", methods=["GET"])
+def chat_ui():
+    return app.send_static_file("chat.html")
+p.route("/chat", methods=["GET"])
 def chat_ui():
     return \"\"\"
     <!DOCTYPE html>
@@ -84,8 +87,11 @@ def chat_ui():
     </body>
     </html>
     \"\"\"
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=5000)
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
+
 
 
